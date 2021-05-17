@@ -24,6 +24,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
+    "multer": "^1.4.2",
     "multiparty": "^4.2.2",
     "multiparty-express": "^0.1.9",
     "os": "^0.1.1",
