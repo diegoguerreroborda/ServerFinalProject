@@ -20,9 +20,14 @@
   "dependencies": {
     "busboy": "^0.3.1",
     "express": "^4.17.1",
+    "ffmpeg": "0.0.4",
+    "fluent-ffmpeg": "^2.1.2",
     "fs": "0.0.1-security",
     "http": "0.0.1-security",
+    "multiparty": "^4.2.2",
+    "multiparty-express": "^0.1.9",
     "os": "^0.1.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "shelljs": "^0.8.4"
   }
 }
