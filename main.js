@@ -16,9 +16,10 @@ const PDFDocument = require('pdfkit');
 const path = require('path');
 const fs = require('fs');
 
-const PORT = process.argv[2];
+const PORT = 3001;
 
 let ssList = []
+let list_jobs = []
 let emailCurrent = '';
 
 const app = express()
@@ -43,12 +44,13 @@ amqp.connect('amqp://localhost', function(error, connection) {
         console.log(" [*] Waiting for messages in %s. To exit press CTRL+C", queue);
         channel.consume(queue, function(msg) {
           let result = flatted.parse(msg.content.toString())
+          list_jobs = {number:msg.fields.deliveryTag, name:msg.fields.consumerTag, email: result.email, path: result.path, port: PORT}
+          console.log(list_jobs)
           console.log(result)
           emailCurrent = result.email
           downloadVideo(result.path)
           console.log(" [x] Received %s");
           fillRandomSS();
-          
           setTimeout(function() {
             console.log(" [x] Done");
               channel.ack(msg);
@@ -62,7 +64,7 @@ amqp.connect('amqp://localhost', function(error, connection) {
 
 async function downloadVideo(pathC){
   const url = pathC
-  const file = fs.createWriteStream("uploads/video.mp4");
+  const file = fs.createWriteStream("./uploads/video.mp4");
   await http.get(url, function(response) {
   response.pipe(file);
   });
@@ -71,10 +73,9 @@ async function downloadVideo(pathC){
 function takeScreenshots(pathC){
   shell.exec(`./deleteSS.sh`)
   ffmpeg(pathC).takeScreenshots({
-    count: 10,
+    count: 5,
     timemarks: [ `${ssList[0].number}`, `${ssList[1].number}`, `${ssList[2].number}`, 
-      `${ssList[3].number}`,`${ssList[4].number}`, `${ssList[5].number}`, 
-      `${ssList[6].number}`, `${ssList[7].number}`, `${ssList[8].number}`, `${ssList[9].number}`] // number of seconds
+      `${ssList[3].number}`,`${ssList[4].number}`] // number of seconds
   }, './ss', function(err, filenames) {
     if(err){
       throw err;
@@ -91,7 +92,7 @@ function getRandomArbitrary(min, max) {
 }
 
 function fillRandomSS(){
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 5; i++) {
     ssList.push({number: getRandomArbitrary(0, 8)})
  }
  console.log(ssList)
